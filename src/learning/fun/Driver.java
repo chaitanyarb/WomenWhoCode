@@ -2,19 +2,26 @@ package learning.fun;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class Driver {
 
 	public static void main (String args[]) {
 		List<String> listOfStrings = Arrays.asList("one","two","three","four","five");
-		List<Integer> listOfInterger =  Arrays.asList(3,5,1,6,7,10,2);
+		List<Integer> listOfInterger =  Arrays.asList(3,5,1,6,7,10,2, 15);
 		System.out.println("***************Testing with Predicate*****************");
 		testingPredicate(listOfInterger,listOfStrings);
 		System.out.println("***************Testing with Filter and Predicate*****************");
 		testingFilterWithPredicate(listOfInterger,listOfStrings);
 		System.out.println("***************Testing with BiFunction*****************");
 		testingBiFunction(listOfInterger,listOfStrings);
+		System.out.println("**********************Testing optionals***************");
+		testOptionals(listOfInterger);
+		System.out.println("***********************Chained Consumers*************");
+		testChainedConsumers(listOfStrings);
 	}
+
 
 	/**
 	 * @param listOfInterger
@@ -84,5 +91,26 @@ public class Driver {
 				
 	}
 	
+	private static void testOptionals(List<Integer> listOfInteger) {
+		
+		OptionalsSample<Integer> osInt = new OptionalsSample<Integer>();
+		
+		osInt.testOptionals(listOfInteger,x-> x>8);
+		osInt.testOptionals(listOfInteger,x-> x>18);
+		
+	}
 	
+	
+	private static void testChainedConsumers(List<String> listOfStrings) {
+		
+		ChainedConsumerSample<String> consumerTest = new ChainedConsumerSample<>();
+		
+		Consumer<String> c1 = (x) -> x.toUpperCase();
+	    
+		Consumer<String> c2 = (x) -> System.out.println(x);
+		
+		Consumer<String> chainedConsumer = c1.andThen(c2);
+		
+	    consumerTest.testChainedConsumer(listOfStrings, chainedConsumer);
+	}
 }
