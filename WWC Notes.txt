@@ -1,0 +1,341 @@
+Lambda Expression:
+------------------------------------------------------------------------------------------------
+Ex1 :
+
+public void method(){
+ System.out.println("Hello!!1");
+}
+
+How will you write in Lambda?
+No name, no return type, no modifier
+-> is the conveyer, indicate that its lambda symbol
+
+() -> System.out.println("Hello!!1");
+
+Ex2 :
+
+public void method(int a , int b){
+ System.out.println(a+b);
+}
+
+(int a, int b) -> System.out.println(a+b);
+
+Compiler can guess the type automatically so remove the type of arguments
+
+(a,b)->System.out.println(a+b);
+
+Ex3:
+
+public int Square(int a) {
+	return n*n;
+}
+
+(n)-> return n*n;
+Without curly braces if you want to return something just do:
+
+(n) -> n*n;
+
+If you want to use return keyword, it should be present in curly braces.
+If you have only 1 input parameter, no need paranthesis its optional
+
+n->n*n;
+
+The element to the left of the arrow(->) are the parameters of the lambda. In this case the input parameter is defined as- String param.
+To the right of the arrow(->) we have the body of the lambda. Body is where the actual processing within a lambda happens.
+Variant 1.(parameters) -> expression– In this variant the return type of the lambda expression will be same as the resultant type of the expression
+Variant 2.(parameters) -> {statements;} – In this variant, there will be no return type(or void return type) unless the statements inside the curly braces explicitly return something at the end. 
+
+ passing of behavior as a parameter. In fact, lambdas are the main instruments of enabling behavior parameterization in Java 8.
+--------------------------------------------------------------------------------------------
+Functional Interfaces:
+--------------------------------------------------------------------------------------------
+ An interface with exactly one abstract method becomes Functional Interface.
+ 
+ One of the major benefits of functional interface is the possibility to use lambda expressions to instantiate them. 
+ We can instantiate an interface with anonymous class but the code looks bulky.
+ 
+ Existing FI's are
+ 
+ Runnable => run()
+ Callable => call()
+ Comparable => compareTo()
+ 
+ Can we have default methods and static methods in interface?
+ YEs, the rule is applicable for only abstract method.
+ To indicate explicitly that a interface is Functional Interfcae, we have a annotation called @FunctionalInterface
+ 
+ Ex1:
+
+ interface myclass {
+ 
+  public void absMethod();
+  default void defaultMethod(){
+	System.out.println("default methid");
+	
+  static void staticMethod() {
+	System.out.println("static method");
+  }
+ 
+ }
+ 
+ Ex2:
+ 
+ @FunctionalInterface
+ interface A {
+  public void method1();
+ }
+ -------Valid-----
+ @FunctionalInterface
+ interface B extends A {
+ 
+ }
+ -------Valid-----
+ @FunctionalInterface
+ interface B extends A {
+  public void method1(); //no new abstarct method so ok!!!
+ }
+ 
+  -------INValid-----
+ @FunctionalInterface
+ interface B extends A {
+  public void method2(); // new abstarct method so not ok!!!
+ }
+  -------Valid-----
+ interface B extends A {
+  public void method2(); //We removed Annottaion its valid now!!!
+ }
+ 
+ If you define annotation or not, if your class has SAM then it becomes a FI.
+ 
+ Ex3 :
+ 
+ Using lambda to call FI:
+ Implement FI we can use lambda expression:
+ 
+ interface Inter1 {
+  public void method1();
+ }
+ 
+ class Demo implements Inter1 {
+ 
+   public void method1() {
+     System.out.println("Hello");	 
+   }
+ 
+ }
+ 
+class Test {
+
+public static void main (String args[]) {
+
+Demo d = new Demo();
+d.method1();
+
+}
+}
+
+Now using lambda to implement to FI:
+ interface Inter1 {
+  public void method1();
+ }
+ 
+class Test {
+
+public static void main (String args[]) {
+	Inter1 i = () -> System.out.println("Hello");	
+	i.method1(); // Use this if u want to call lambda expression.
+	}
+}
+FI can be used to provide reference a lambda expression.
+So lambda expressions are means to create anonymous classes of functional interfaces easily. 
+Lambda expressions are always associcated with FI only.
+
+There will be no .class file generated for lambda expressions. It is not a replcament for anonymous inner classes so no seprate .class file will be there.
+
+
+----------------------------------------------------------------------
+Method References
+------------------------------------------------------------------------
+
+the lambda expression is really just a call to some method, for example:
+
+Arguments are not passed in method reference
+
+Consumer<String> c = s -> System.out.println(s);
+
+To make the code clearer, you can turn that lambda expression into a method reference:
+
+Consumer<String> c = System.out::println;
+
+They can only be used to replace a single-method lambda expression.
+
+1. Static Method reference
+Class::staticMethod
+
+2. Instance Method reference of a object type
+ObjectType::instanceMethod
+
+3. Instance method reference of a existing object
+obj::instanceMethod
+
+4.Contructore method refrence
+ClassName::new
+
+------
+Predicate
+---------
+
+
+Static method isEqual() – Predicate interface also has a static method isEqual() which can be used to compare 2 instances of Predicate functional interface.
+Its defined as – static <T> Predicate<T> isEqual(Object targetRef)
+It returns a predicate that tests if two arguments are equal according to Objects.equals(Object, Object).
+
+
+----------------------
+Function
+----------------------
+
+input --> perform some operation --> Output
+
+interface Function<T,R>
+{
+ public R apply (T t);
+ }
+ 
+ Will have minimum 2 type -> input class type and a return class type.
+ whre as predicate will take only 1 as input since our output is always boolean.
+ 
+ In all scenarios where an object of a particular type is the input, an operation is performed on it and and object of another type is returned as output, 
+ the in-built functional interface Function<T, R> can be used without the need to define a new functional interface every time.
+
+ First default method compose() combines the function on which it is applied(lets call it the current function) with another function, named before, in such a way that when the combined function is applied then first the before function is applied which converts the input type V to type T. And then the current function converts this object of type T to its output type R. 
+ Thus, the combined function obtained as a result of compose() applies both the functions, in the process converting type V to R.
+ 
+The second default method is andThen() which combines the function on which it is applied(current function) with another function, named after, in such a way that when the combined function is called then first the current function is applied which converts the input type T to type R. And then the after function is applied which converts from type R to V. 
+Thus, the combined function obtained by using andThen() default method applies both functions internally, in the process converting type T to type V.
+
+also contains a static method identity() which is very simple as it returns as-is whatever is given to it as input. 
+In the code above it takes as input a parameter t of Type T and returns back this t
+
+
+
+-------------------------
+Consumers
+-------------------------
+Consumer can be used in all contexts where an object needs to be consumed
+,i.e. taken as input, and some operation is to be performed on the object without returning any result. 
+Since Consumer is a functional interface, hence it can be used as the assignment target for a lambda expression or a method reference.
+
+accept() method is the primary abstract method of the Consumer functional interface. Its function descriptor being T -> (). 
+I.e. accept() method takes as input the type T and returns no value. I will explain usage of accept() with detailed example in the next section.
+
+andThen() is a default method
+in Consumer interface. Method andThen(), when applied on a Consumer interface, takes as input another instance of Consumer interface and returns as 
+a result a new consumer interface which represents aggregation of both of the operations defined in the two Consumer interfaces.
+
+IntConsumer,DoubleConsumer,LongConsumer
+--------------------
+Supplier
+---------------------------------
+
+Supplier can be used in all contexts where there is no input but an output is expected. 
+Supplier has been defined with the generic type T which is the same type which its get() methods return as output.
+get() method is the primary abstract method of the Supplier functional interface. Its function descriptor being () -> T .
+ I.e. get() method takes no input and returns an output of type T. I will explain usage of get() with detailed example in the next section.
+
+ IntSupplier having one abstract method getAsInt()
+LongSupplier having one abstract method getAsLong()
+DoubleSupplier having one abstract method getAsDouble()
+BooleanSupplier having one abstract method getAsBoolean()
+---------------------------------------------------------------------------------
+Stream Operations
+--------------------------------------------------------------------------------
+
+Stream operations are either intermediate or terminal. Intermediate operations return a stream so we can chain multiple intermediate
+ operations without using semicolons.
+ Terminal operations are either void or return a non-stream result. 
+
+A function is non-interfering when it does not modify the underlying data source of the stream,
+ e.g. in the above example no lambda expression does modify myList by adding or removing elements from the collection.
+
+A function is stateless when the execution of the operation is deterministic, 
+e.g. in the above example no lambda expression depends on any mutable variables or states from the outer scope which might change during execution.
+
+Streams can be created from various data sources, especially collections. Lists and Sets support
+ new methods stream() and parallelStream() to either create a sequential or a parallel stream. Parallel streams are capable of operating on multiple threads
+
+ we don't have to create collections in order to work with streams as we see in the next code sample:
+
+Stream.of("a1", "a2", "a3")
+    .findFirst()
+    .ifPresent(System.out::println);  // a1
+
+Just use Stream.of() to create a stream from a bunch of object references.
+
+Java 8 ships with special kinds of streams for working with the primitive data types int, long and double.
+ As you might have guessed it's IntStream, LongStream and DoubleStream.
+  IntStream.range(1, 4)
+    .forEach(System.out::println);
+
+Sometimes it's useful to transform a regular object stream to a primitive stream or vice versa. 
+For that purpose object streams support the special mapping operations mapToInt(), mapToLong() and mapToDouble:
+
+Stream.of("a1", "a2", "a3")
+    .map(s -> s.substring(1))
+    .mapToInt(Integer::parseInt)
+    .max()
+    .ifPresent(System.out::println);  // 3
+
+Primitive streams can be transformed to object streams via mapToObj():
+
+IntStream.range(1, 4)
+    .mapToObj(i -> "a" + i)
+    .forEach(System.out::println);
+	
+Example for order of opetions (map then fileter ) good one is fileter + map
+
+
+Supplier<Stream<String>> streamSupplier =
+    () -> Stream.of("d2", "a2", "b1", "b3", "c")
+            .filter(s -> s.startsWith("a"));
+
+streamSupplier.get().anyMatch(s -> true);   // ok
+streamSupplier.get().noneMatch(s -> true);
+
+Collect accepts a Collector which consists of four different operations: a supplier, an accumulator, a combiner and a finisher. 
+This sounds super complicated at first, but the good part is Java 8 supports various built-in collectors via the Collectors class.
+
+Parallel Stream
+
+Streams can be executed in parallel to increase runtime performance on large amount of input elements.
+ Parallel streams use a common ForkJoinPool available via the static ForkJoinPool.commonPool() method. 
+ 
+The map() function is a method in the Stream class which represents a functional programming concept. 
+In simple words, the map() is used to transform one object into other by applying a function.
+
+Statefull and stateless intermediate operations -> sort() ,distinct()
+stateless -> filter(), map(), findAny()
+
+FILETES:
+---------------
+
+coming to the filter method, as its name suggests, it filters elements based upon a condition you gave it.
+Similar to map, the filter is also an intermediate operation which means you can call other Stream methods after calling the filter.
+
+The filter() method is also lazy which means that it will not be evaluated until you call a reduction method, 
+like collect, and it will stop as soon as it reaches the target. 
+
+MAP:
+---------------------
+Assume we now have a filtered data that we can use for the real operations, say transforming the objects. 
+The map operations allows us to apply a function , that takes in a parameter of one type, and returns something else. 
+
+REDUCE:
+------------------
+
+he reduction operation combines all elements of the stream into a single result
+ Java 8 supports three different kind of reduce methods. The first one reduces a stream of elements to exactly one element of the stream
+ The reduce method accepts a BinaryOperator accumulator function. 
+ he second reduce method accepts both an identity value and a BinaryOperator accumulator. 
+ The third reduce method accepts three parameters: an identity value, a BiFunction accumulator and a combiner function of type BinaryOperator.
+	
